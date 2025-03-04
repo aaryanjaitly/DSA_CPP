@@ -154,11 +154,59 @@ public:
             cout << endl;
         }
     }
+    int** Sparse_Matrix(int non_zero_elements){
+        int **Sparese_Matrix = new int*[3];
+            Sparese_Matrix[0] = new int[non_zero_elements];
+            Sparese_Matrix[1] = new int[non_zero_elements];
+            Sparese_Matrix[2] = new int[non_zero_elements+1];
+            Sparese_Matrix[0][0] = this->rows;
+            Sparese_Matrix[1][0] = this->cols;
+            Sparese_Matrix[2][0] = non_zero_elements;
+            return(Sparese_Matrix);
+    }
+    void Set_Sparse_Matrix_Value(int ** sparse_matrix,int i, int j, int val){
+        static int index = 0;
+        if(i <= this->rows && j <= this->cols && i > 0 && j > 0 && index < sparse_matrix[2][0]){
+            sparse_matrix[0][index+1] = i;
+            sparse_matrix[1][index+1] = j;
+            sparse_matrix[2][index+1] = val;
+            index++;
+        }
+        else{
+            cout << "Wrong Index or More Than Required non Zero Elements." << endl;
+        }
+    }
+    void Print_Sparse_Matrix(int ** sparse_matrix){
+        int i, j, k = 1;
+        for (int i = 1; i < this->rows; i++)
+        {
+            for (int j = 1; j < this->cols; j++)
+            {
+                if (i == sparse_matrix[0][k] && j == sparse_matrix[1][k])
+                {
+                    cout << " "<< sparse_matrix[2][k] << " ";
+                    k++;
+                }
+                else{
+                    cout << " 0 ";
+                }
+            }
+            cout << endl;
+        }
+        
+    }
+
 
     ~Matrix();
 };
 
 int main(){
-    Matrix *A =  new Matrix(3,3);
+    Matrix *A =  new Matrix(9,9);
+    int ** SM = A->Sparse_Matrix(3);
+    A->Set_Sparse_Matrix_Value(SM,1,1,10);
+    A->Set_Sparse_Matrix_Value(SM,2,2,20);
+    A->Set_Sparse_Matrix_Value(SM,3,3,30);
+    A->Print_Sparse_Matrix(SM);
+    
     return 0;
 }
