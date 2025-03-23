@@ -5,6 +5,7 @@ struct Node{
     Node *left;
     int data;
     Node *right;
+    int height;
 };  
 
 
@@ -276,6 +277,120 @@ class BST{
     }
 };
 
+
+class AVL {
+    private:
+        Node *root;
+    
+    public:
+        AVL() {
+            this->root = nullptr;
+        }
+    
+        void set_root(Node *r) {
+            root = r;
+        }
+    
+        Node* get_root() {
+            return this->root;
+        }
+    
+        void Inorder(Node* root) {
+            if (root == nullptr) {
+                return;
+            }
+            Inorder(root->left);
+            cout << root->data << " ";
+            Inorder(root->right);
+        }
+    
+        int Node_Height(Node *p) {
+            if (p == nullptr) return 0;
+            int hl = p->left ? p->left->height : 0;
+            int hr = p->right ? p->right->height : 0;
+            return max(hl, hr) + 1;
+        }
+    
+        int Balance_Factor(Node *p) {
+            if (p == nullptr) return 0;
+            int hl = p->left ? p->left->height : 0;
+            int hr = p->right ? p->right->height : 0;
+            return hl - hr;
+        }
+    
+        Node* LL(Node *p) {
+            Node* pl = p->left;
+            p->left = pl->right;
+            pl->right = p;
+    
+            p->height = Node_Height(p);
+            pl->height = Node_Height(pl);
+    
+            if (root == p) root = pl;
+            return pl;
+        }
+    
+        Node* LR(Node *p) {
+            p->left = RR(p->left);
+            return LL(p);
+        }
+    
+        Node* RR(Node *p) {
+            Node* pr = p->right;
+            p->right = pr->left;
+            pr->left = p;
+    
+            p->height = Node_Height(p);
+            pr->height = Node_Height(pr);
+    
+            if (root == p) root = pr;
+            return pr;
+        }
+    
+        Node* RL(Node *p) {
+            p->right = LL(p->right);
+            return RR(p);
+        }
+    
+        Node* Insert(Node *p, int val) {
+            if (p == nullptr) {
+                Node* new_node = new Node();
+                new_node->data = val;
+                new_node->left = nullptr;
+                new_node->right = nullptr;
+                new_node->height = 1;
+                return new_node;
+            }
+    
+            if (val < p->data) {
+                p->left = Insert(p->left, val);
+            } else if (val > p->data) {
+                p->right = Insert(p->right, val);
+            } else {
+                return p;
+            }
+    
+            p->height = Node_Height(p);
+    
+            int balance = Balance_Factor(p);
+    
+            if (balance > 1 && val < p->left->data) {
+                return LL(p);
+            }
+            if (balance < -1 && val > p->right->data) {
+                return RR(p);
+            }
+            if (balance > 1 && val > p->left->data) {
+                return LR(p);
+            }
+            if (balance < -1 && val < p->right->data) {
+                return RL(p);
+            }
+    
+            return p;
+        }
+    };
+
 int main(){
     // Tree *t = new Tree();
     // Node *root = t->Create_Tree(10);
@@ -286,16 +401,23 @@ int main(){
     // t->Inorder(root);
     // cout << endl;
 
-    BST *t1 = new BST();
-    t1->Insert(10);
-    t1->Insert(5);
-    t1->Insert(20);
-    t1->Insert(8);
-    t1->Insert(30);
+    // BST *t1 = new BST();
+    // t1->Insert(10);
+    // t1->Insert(5);
+    // t1->Insert(20);
+    // t1->Insert(8);
+    // t1->Insert(30);
     // t1->Inorder(t1->get_root());
     // cout << (t1->Search(20))->data << endl;
-    t1->Delete(t1->get_root(),5);
-    t1->Inorder(t1->get_root());
+    // t1->Delete(t1->get_root(),5);
+    // t1->Inorder(t1->get_root());
 
+    AVL *a1 = new AVL();
+    a1->set_root(a1->Insert(a1->get_root(), 10));
+    a1->Insert(a1->get_root(), 5);
+    a1->Insert(a1->get_root(), 2);
+    a1->Inorder(a1->get_root());
+    cout << endl;
+    
     return 0;
 }
